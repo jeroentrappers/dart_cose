@@ -7,6 +7,9 @@ import 'package:cbor/cbor.dart';
 import 'package:crypto_keys/crypto_keys.dart';
 import 'package:x509/x509.dart';
 
+const begin_cert = '-----BEGIN CERTIFICATE-----';
+const end_cert = '-----END CERTIFICATE-----';
+
 const HeaderParameters = {
   'partyUNonce': -22,
   'static_key_id': -3,
@@ -152,13 +155,13 @@ class Cose {
     var kid = header[HeaderParameters['kid']];
     var a = header[HeaderParameters['alg']];
     var alg = AlgFromTags[a];
-    print("kid: ${base64.encode(kid)}");
-    print("alg: $alg");
+    //print("kid: ${base64.encode(kid)}");
+    //print("alg: $alg");
 
     // parse the payload
     var payloadCbor = Cbor();
     payloadCbor.decodeFromBuffer(payloadBytes);
-    print(payloadCbor.decodedPrettyPrint());
+    //print(payloadCbor.decodedPrettyPrint());
 
     dynamic payload = {};
     try {
@@ -179,11 +182,9 @@ class Cose {
     cert = cert.trim();
 
     // add pem header and footer if missing.
-    if (!(cert.startsWith('-----BEGIN CERTIFICATE-----') &&
-        cert.endsWith('-----END CERTIFICATE-----'))) {
-      cert = '-----BEGIN CERTIFICATE-----\n' +
-          cert +
-          '\n-----END CERTIFICATE-----';
+
+    if (!(cert.startsWith(begin_cert) && cert.endsWith(end_cert))) {
+      cert = begin_cert + '\n' + cert + '\n' + end_cert;
     }
 
     // we expect there to be only 1 cert in the pem, so we take the first.
@@ -203,19 +204,12 @@ class Cose {
     sigStructure.decodeFromInput();
     final sigStructureBytes = sigStructure.output.getData();
 
-    print(sigStructure.decodedPrettyPrint());
-
-    print('');
-    print(base64.encode(sigStructureBytes));
-    print('');
-
     var publicKey = x509cert.publicKey;
 
     var verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha256);
 
     var verified = verifier.verify(sigStructureBytes.buffer.asUint8List(),
         Signature(Uint8List.view(signers.buffer, 0, signers.length)));
-    //verifier.verify(hash.bytes, signature);
 
     return CoseResult(
         payload: payload, verified: verified, errorCode: CoseErrorCode.none);
