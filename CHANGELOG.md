@@ -5,3 +5,7 @@
 ## [1.0.1] - Select secondary algorithm based on key type
 
 * Support RSA aside from EC keys.
+
+## [1.0.2] - Return payload
+
+* Return payload
