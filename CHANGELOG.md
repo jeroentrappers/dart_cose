@@ -1,3 +1,3 @@
-## [0.0.1] - TODO: Add release date.
+## [1.0.0] - Initial functionality to decode and verify a COSE signature
 
-* TODO: Describe initial release.
+* Initial functionality to decode and verify a COSE signature
