@@ -1,10 +1,8 @@
 import 'dart:io';
-
 import 'package:dart_base45/dart_base45.dart';
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:dart_cose/dart_cose.dart';
 import 'package:convert/convert.dart';
+import 'package:test/test.dart';
 
 List<int> unChain(String input) {
   // trim HC1
