@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:cbor/cbor.dart';
+import 'package:crypto/crypto.dart';
 import 'package:crypto_keys/crypto_keys.dart';
 import 'package:x509/x509.dart';
 
@@ -72,6 +73,12 @@ const AlgToTags = {
   'AES-CCM-64-256/128': 33
 };
 
+String calcKid(X509Certificate cert) {
+  var encoded = cert.toAsn1().encodedBytes;
+  var hash = sha256.convert(encoded);
+  return base64Encode(hash.bytes);
+}
+
 enum CoseErrorCode {
   none,
   cbor_decoding_error,
@@ -80,7 +87,8 @@ enum CoseErrorCode {
   unsupported_header_format,
   invalid_header_format,
   payload_format_error,
-  key_not_found
+  key_not_found,
+  kid_mismatch
 }
 
 class CoseResult {
@@ -153,6 +161,7 @@ class Cose {
     var header = headerList.first;
 
     var kid = header[HeaderParameters['kid']];
+    var bkid = base64.encode(kid);
     var a = header[HeaderParameters['alg']];
     var alg = AlgFromTags[a];
     //print("kid: ${base64.encode(kid)}");
@@ -173,12 +182,12 @@ class Cose {
           verified: false,
           errorCode: CoseErrorCode.payload_format_error);
     }
-    if (!certs.containsKey(base64.encode(kid))) {
+    if (!certs.containsKey(bkid)) {
       return CoseResult(
           payload: {}, verified: false, errorCode: CoseErrorCode.key_not_found);
     }
 
-    String cert = certs[base64.encode(kid)];
+    String cert = certs[bkid];
     cert = cert.trim();
 
     // add pem header and footer if missing.
@@ -189,6 +198,13 @@ class Cose {
 
     // we expect there to be only 1 cert in the pem, so we take the first.
     var x509cert = parsePem(cert).first as X509Certificate;
+
+    var cKid = calcKid(x509cert);
+    // check if kid matches
+    if (cKid != bkid) {
+      return CoseResult(
+          payload: {}, verified: false, errorCode: CoseErrorCode.kid_mismatch);
+    }
 
     var sigStructure = Cbor();
     final sigStructureEncoder = sigStructure.encoder;
