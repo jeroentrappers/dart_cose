@@ -26,53 +26,6 @@ const HeaderParameters = {
   'counter_signature': 7
 };
 
-const AlgFromTags = {
-  -7: {'sign': 'ES256', 'digest': 'SHA-256'},
-  -35: {'sign': 'ES384', 'digest': 'SHA-384'},
-  -36: {'sign': 'ES512', 'digest': 'SHA-512'}
-};
-
-const AlgToTags = {
-  'ECDH-SS-512': -28,
-  'ECDH-SS': -27,
-  'ECDH-ES-512': -26,
-  'ECDH-ES': -25,
-  'ES256': -7,
-  'direct': -6,
-  'A128GCM': 1,
-  'A192GCM': 2,
-  'A256GCM': 3,
-  'SHA-256_64': 4,
-  'SHA-256-64': 4,
-  'HS256/64': 4,
-  'SHA-256': 5,
-  'HS256': 5,
-  'SHA-384': 6,
-  'HS384': 6,
-  'SHA-512': 7,
-  'HS512': 7,
-  'AES-CCM-16-64-128': 10,
-  'AES-CCM-16-128/64': 10,
-  'AES-CCM-16-64-256': 11,
-  'AES-CCM-16-256/64': 11,
-  'AES-CCM-64-64-128': 12,
-  'AES-CCM-64-128/64': 12,
-  'AES-CCM-64-64-256': 13,
-  'AES-CCM-64-256/64': 13,
-  'AES-MAC-128/64': 14,
-  'AES-MAC-256/64': 15,
-  'AES-MAC-128/128': 25,
-  'AES-MAC-256/128': 26,
-  'AES-CCM-16-128-128': 30,
-  'AES-CCM-16-128/128': 30,
-  'AES-CCM-16-128-256': 31,
-  'AES-CCM-16-256/128': 31,
-  'AES-CCM-64-128-128': 32,
-  'AES-CCM-64-128/128': 32,
-  'AES-CCM-64-128-256': 33,
-  'AES-CCM-64-256/128': 33
-};
-
 String calcKid(X509Certificate cert) {
   var encoded = cert.toAsn1().encodedBytes;
   var hash = sha256.convert(encoded);
@@ -88,7 +41,8 @@ enum CoseErrorCode {
   invalid_header_format,
   payload_format_error,
   key_not_found,
-  kid_mismatch
+  kid_mismatch,
+  unsupported_algorithm
 }
 
 class CoseResult {
@@ -162,10 +116,9 @@ class Cose {
 
     var kid = header[HeaderParameters['kid']];
     var bkid = base64.encode(kid);
-    var a = header[HeaderParameters['alg']];
-    var alg = AlgFromTags[a];
+    //var a = header[HeaderParameters['alg']];
     //print("kid: ${base64.encode(kid)}");
-    //print("alg: $alg");
+    //print("alg: $a");
 
     // parse the payload
     var payloadCbor = Cbor();
@@ -199,12 +152,12 @@ class Cose {
     // we expect there to be only 1 cert in the pem, so we take the first.
     var x509cert = parsePem(cert).first as X509Certificate;
 
-    var cKid = calcKid(x509cert);
-    // check if kid matches
-    if (cKid != bkid) {
-      return CoseResult(
-          payload: {}, verified: false, errorCode: CoseErrorCode.kid_mismatch);
-    }
+    // var cKid = calcKid(x509cert);
+    // // check if kid matches
+    // if (cKid != bkid) {
+    //   return CoseResult(
+    //       payload: {}, verified: false, errorCode: CoseErrorCode.kid_mismatch);
+    // }
 
     var sigStructure = Cbor();
     final sigStructureEncoder = sigStructure.encoder;
@@ -222,7 +175,22 @@ class Cose {
 
     var publicKey = x509cert.publicKey;
 
-    var verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha256);
+    // -7: {'sign': 'ES256', 'digest': 'SHA-256'},
+    Verifier verifier;
+    if (publicKey is EcPublicKey) {
+      // primary algorithm
+      /// ECDSA using P-256 and SHA-256
+      verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha256);
+    } else if (publicKey is RsaPublicKey) {
+      // secondary algorithm
+      /// RSASSA-PKCS1-v1_5 using SHA-256
+      verifier = publicKey.createVerifier(algorithms.signing.rsa.sha256);
+    } else {
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.unsupported_algorithm);
+    }
 
     var verified = verifier.verify(sigStructureBytes.buffer.asUint8List(),
         Signature(Uint8List.view(signers.buffer, 0, signers.length)));
