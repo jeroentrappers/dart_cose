@@ -137,7 +137,9 @@ class Cose {
     }
     if (!certs.containsKey(bkid)) {
       return CoseResult(
-          payload: {}, verified: false, errorCode: CoseErrorCode.key_not_found);
+          payload: payload,
+          verified: false,
+          errorCode: CoseErrorCode.key_not_found);
     }
 
     String cert = certs[bkid];
@@ -187,7 +189,7 @@ class Cose {
       verifier = publicKey.createVerifier(algorithms.signing.rsa.sha256);
     } else {
       return CoseResult(
-          payload: {},
+          payload: payload,
           verified: false,
           errorCode: CoseErrorCode.unsupported_algorithm);
     }
