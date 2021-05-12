@@ -1,6 +1,6 @@
 name: dart_cose
 description: Partial Dart implementation of COSE, RFC8152
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/jeroentrappers/dart_cose
 
 environment:
