@@ -1,0 +1,42 @@
+import 'dart:io';
+
+import 'package:dart_base45/dart_base45.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:dart_cose/dart_cose.dart';
+import 'package:convert/convert.dart';
+
+List<int> unChain(String input) {
+  // trim HC1
+  // Compressed COSE (Base45) (548 chars):
+  final trimmedQrString = input.substring(input.indexOf(":") + 1);
+  print(trimmedQrString);
+  print('');
+
+  // Base45 decode
+  // COSE (Hex) (712 chars):
+  //
+  final compressedCose = Base45.decode(trimmedQrString);
+  print(hex.encode(compressedCose));
+  print('');
+
+  // unzip
+  // Cose
+  ZLibCodec zlib = new ZLibCodec();
+  final List<int> cose = zlib.decode(compressedCose);
+  return cose;
+}
+
+void main() {
+  test('validate example QR string', () async {
+    var result = Cose.decodeAndVerify(
+        unChain(
+            '''HC1:NCF3TDJ%B6FLSTSTYOEKDNXP4H5UV0CXH9M9ESIM NHXK.7TKZ65B9B+PLLC5VC9:BXCNUKMUB4WXKYKMXEE1JAA/C5/DEEA+ZAREDHNHZFC3IKKOL0PK\$2MXGGM+G\$C9EOJI1MNPL+JNIMH7I99QM/FJVCI0DJ WJ/Q6395J4I-B5ET42HPPEPHCRSV8OEQAC5ADNA2P 96PTMKP8DK4LC6DQ4ZIOXHM4FA.KMQP4L7O/VMGF6:/6N9R%EPXCROGO CODFLXQ6Z6NC8P\$WA3AA9EPBDSM+Q8H4O670C57Q4UYQD*O%+Q.SQBDOBKLP64-HQ/HQ+DR-DP71AAKPCPP0%M\$76NV6FJB 1JI7JSTNB95526NL7.KMM473X73ZPMIU1RKA+QIUSQ*N8%MKMI72EWBPHJSC.UPLI906\$8R-3FW8O84B1-ST*QGTA4W7.Y7U01.BUV2U:T2J V5XJ623XXJJPSJ H823I3W..2O56RAIR8L3:EPOSP6KHAO506%.NUKKL7VAAOL26IUR+ZPCR7P 5JBF6RL6AL3:Q:.CI00E6TS3'''),
+        {
+          'uE7ViYTSegg=':
+              '''MIICyzCCAnGgAwIBAgIBATAKBggqhkjOPQQDAjCBqTELMAkGA1UEBhMCREsxKTAnBgNVBAoMIFRoZSBEYW5pc2ggSGVhbHRoIERhdGEgQXV0aG9yaXR5MSkwJwYDVQQLDCBUaGUgRGFuaXNoIEhlYWx0aCBEYXRhIEF1dGhvcml0eTEcMBoGA1UEAwwTVEVTVF9DU0NBX0RHQ19ES18wMTEmMCQGCSqGSIb3DQEJARYXa29udGFrdEBzdW5kaGVkc2RhdGEuZGswHhcNMjEwNTA2MDcxMzI1WhcNMjMwNTA3MDcxMzI1WjCBqDELMAkGA1UEBhMCREsxKTAnBgNVBAoMIFRoZSBEYW5pc2ggSGVhbHRoIERhdGEgQXV0aG9yaXR5MSkwJwYDVQQLDCBUaGUgRGFuaXNoIEhlYWx0aCBEYXRhIEF1dGhvcml0eTEbMBkGA1UEAwwSVEVTVF9EU0NfREdDX0RLXzAxMSYwJAYJKoZIhvcNAQkBFhdrb250YWt0QHN1bmRoZWRzZGF0YS5kazBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABL0JDUKq2pxjU5RxY1l8bdGpTNRJtAcpdCt+NeCvi4eEhTPz7KIddqBqG4TbylBMqTDYCHrsTxOP4iBRrQE3pyWjgYgwgYUwDgYDVR0PAQH/BAQDAgeAMB0GA1UdDgQWBBQi6XXC6dQ17M3qyUDZMQPB7ecD7zAfBgNVHSMEGDAWgBS43XjKHFShS4ohleIhOwzEaOS38DAzBgNVHSUELDAqBgwrBgEEAQCON49lAQEGDCsGAQQBAI43j2UBAgYMKwYBBAEAjjePZQEDMAoGCCqGSM49BAMCA0gAMEUCIF7fye27ODGr5oHpPmzGAF32/S8v+9YBtaWsCPg3vzNKAiEAxhxPz1lJo7oHZE5HXq71fOi62hoTxQvK08glhlq228s='''
+        });
+
+    expect(true, result.verified);
+  });
+}
