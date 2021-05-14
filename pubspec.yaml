@@ -1,20 +1,21 @@
 name: dart_cose
 description: Partial Dart implementation of COSE, RFC8152
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/jeroentrappers/dart_cose
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  #flutter: ">=1.17.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  #flutter:
-  #  sdk: flutter
-  dart_base45: ^1.0.0
+  dart_base45: #^1.0.0
+    path: ../dart_base45
   cbor: ^4.0.1
-  crypto_keys: ^0.3.0
+  crypto_keys: # ^0.3.0
+    path: ../crypto_keys
   crypto: ^3.0.1
-  x509: ^0.2.2
+  
+  x509: #^0.2.2
+    path: ../x509
 
 dev_dependencies:
    test: ^1.17.3

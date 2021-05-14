@@ -50,7 +50,8 @@ class CoseResult {
   final bool verified;
   final CoseErrorCode errorCode;
 
-  CoseResult({this.payload, this.verified, this.errorCode});
+  CoseResult(
+      {required this.payload, required this.verified, required this.errorCode});
 }
 
 /// A Calculator.
@@ -59,7 +60,14 @@ class Cose {
   static CoseResult decodeAndVerify(List<int> cose, Map<String, String> certs) {
     var inst = Cbor();
     inst.decodeFromList(cose);
-    List data = inst.getDecodedData();
+    List<dynamic>? data = inst.getDecodedData();
+
+    if (null == data) {
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.cbor_decoding_error);
+    }
 
     if (data.length <= 0) {
       return CoseResult(
@@ -90,7 +98,7 @@ class Cose {
 
     // extract the useful information.
     final protectedHeader = items[0];
-    //final unprotectedHeader = items[1];
+    final unprotectedHeader = items[1];
     final payloadBytes = items[2];
     final signers = items[3];
 
@@ -98,25 +106,32 @@ class Cose {
     var headers = Cbor();
     headers.decodeFromBuffer(protectedHeader);
     var headerList = headers.getDecodedData();
-    if (!(headerList is List)) {
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.unsupported_header_format);
+    var header = {};
+    if (headerList != null) {
+      if (!(headerList is List)) {
+        return CoseResult(
+            payload: {},
+            verified: false,
+            errorCode: CoseErrorCode.unsupported_header_format);
+      }
+
+      if (headerList.length <= 0) {
+        return CoseResult(
+            payload: {},
+            verified: false,
+            errorCode: CoseErrorCode.cbor_decoding_error);
+      }
+      header = headerList.first;
     }
 
-    if (headerList.length <= 0) {
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.cbor_decoding_error);
-    }
+    final kidKey = HeaderParameters['kid'];
+    // fall back to unprotected header if protected is not provided.
+    final kid = header[kidKey] ?? unprotectedHeader[kidKey];
+    final bkid = base64.encode(kid);
 
-    var header = headerList.first;
+    final algKey = HeaderParameters['alg'];
+    final a = header[algKey] ?? unprotectedHeader[algKey];
 
-    var kid = header[HeaderParameters['kid']];
-    var bkid = base64.encode(kid);
-    //var a = header[HeaderParameters['alg']];
     //print("kid: ${base64.encode(kid)}");
     //print("alg: $a");
 
@@ -127,7 +142,14 @@ class Cose {
 
     dynamic payload = {};
     try {
-      payload = payloadCbor.getDecodedData().first;
+      var data = payloadCbor.getDecodedData();
+      if (null == data) {
+        return CoseResult(
+            payload: {},
+            verified: false,
+            errorCode: CoseErrorCode.payload_format_error);
+      }
+      payload = data.first;
     } on Exception catch (e) {
       print(e);
       return CoseResult(
@@ -142,7 +164,7 @@ class Cose {
           errorCode: CoseErrorCode.key_not_found);
     }
 
-    String cert = certs[bkid];
+    String cert = certs[bkid]!;
     cert = cert.trim();
 
     // add pem header and footer if missing.
@@ -182,11 +204,33 @@ class Cose {
     if (publicKey is EcPublicKey) {
       // primary algorithm
       /// ECDSA using P-256 and SHA-256
-      verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha256);
+      if (-7 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha256);
+      } else if (-35 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha384);
+      } else if (-36 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha512);
+      } else {
+        return CoseResult(
+            payload: payload,
+            verified: false,
+            errorCode: CoseErrorCode.unsupported_algorithm);
+      }
     } else if (publicKey is RsaPublicKey) {
       // secondary algorithm
       /// RSASSA-PKCS1-v1_5 using SHA-256
-      verifier = publicKey.createVerifier(algorithms.signing.rsa.sha256);
+      if (-7 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.rsa.sha256);
+      } else if (-35 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.rsa.sha384);
+      } else if (-36 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.rsa.sha512);
+      } else {
+        return CoseResult(
+            payload: payload,
+            verified: false,
+            errorCode: CoseErrorCode.unsupported_algorithm);
+      }
     } else {
       return CoseResult(
           payload: payload,
