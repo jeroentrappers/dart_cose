@@ -1,8 +1,7 @@
 
-## [1.0.4] = Project cleanup
+## [1.0.5] = Project cleanup
 
 * Remove unused imports, clean up formatting, add example, readme and docs
-
 
 ## [1.0.3] = Finetuning KID validation, also support algo -37
 
