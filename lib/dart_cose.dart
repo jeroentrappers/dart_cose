@@ -3,4 +3,5 @@
 
 library dart_cose;
 
+/// Use COSE to deode and verify COSE sturctures
 export 'src/cose.dart';

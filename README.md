@@ -1,14 +1,9 @@
 # dart_cose
 
-A new Flutter package project.
+A package that can be used to decode and validate a COSE that contains
+a European Digital Green Certificate (DGC).
 
 ## Getting Started
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Import the COSE as binary (List<int>) and your keys in a map 
+kid => PEM and call the decodeAndVerify function on Cose.

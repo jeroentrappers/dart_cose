@@ -3,7 +3,6 @@
 
 library dart_cose;
 
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:cbor/cbor.dart';
