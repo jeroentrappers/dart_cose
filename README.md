@@ -1,3 +1,5 @@
+[![Pub]](https://pub.dartlang.org/packages/dart_cose)
+
 # dart_cose
 
 A package that can be used to decode and validate a COSE that contains
