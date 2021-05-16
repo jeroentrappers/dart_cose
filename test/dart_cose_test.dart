@@ -8,15 +8,10 @@ List<int> unChain(String input) {
   // trim HC1
   // Compressed COSE (Base45) (548 chars):
   final trimmedQrString = input.substring(input.indexOf(":") + 1);
-  //print(trimmedQrString);
-  //print('');
 
   // Base45 decode
   // COSE (Hex) (712 chars):
-  //
   final compressedCose = Base45.decode(trimmedQrString);
-  //print(hex.encode(compressedCose));
-  //print('');
 
   // unzip
   // Cose
