@@ -66,7 +66,7 @@ class Cose {
           errorCode: CoseErrorCode.cbor_decoding_error);
     }
 
-    if (data.length <= 0) {
+    if (data.isEmpty) {
       return CoseResult(
           payload: {},
           verified: false,
@@ -112,7 +112,7 @@ class Cose {
             errorCode: CoseErrorCode.unsupported_header_format);
       }
 
-      if (headerList.length <= 0) {
+      if (headerList.isEmpty) {
         return CoseResult(
             payload: {},
             verified: false,
