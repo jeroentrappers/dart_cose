@@ -11,12 +11,8 @@ dependencies:
   cbor: ^4.0.1
   crypto_keys: ^0.3.0
   crypto: ^3.0.1
-  x509: #^0.2.2
-    git:
-      url: git://github.com/jeroentrappers/x509.git
-      ref: ehn_fixes
-
-  ninja:  3.0.2
+  x509b: ^0.2.3
+  ninja: ^3.0.2
 
 dev_dependencies:
    test: ^1.17.3

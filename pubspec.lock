@@ -407,15 +407,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  x509:
+  x509b:
     dependency: "direct main"
     description:
-      path: "."
-      ref: ehn_fixes
-      resolved-ref: "5bc56f3ca4b0c327f2906185c02fe6f8e0815a4e"
-      url: "git://github.com/jeroentrappers/x509.git"
-    source: git
-    version: "0.2.2"
+      name: x509b
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.3"
   yaml:
     dependency: transitive
     description:
