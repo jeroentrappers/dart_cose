@@ -1,4 +1,5 @@
-[![Pub]](https://pub.dartlang.org/packages/dart_cose)
+[![Pub](https://img.shields.io/pub/v/dart_cose.svg)](https://pub.dartlang.org/packages/dart_cose)
+[![Build status](https://travis-ci.org/jeroentrappers/dart_cose.svg?branch=main)](https://travic-ci.org/github/jeroentrappers/dart_cose)
 
 # dart_cose
 
@@ -9,3 +10,4 @@ a European Digital Green Certificate (DGC).
 
 Import the COSE as binary (List<int>) and your keys in a map 
 kid => PEM and call the decodeAndVerify function on Cose.
+
