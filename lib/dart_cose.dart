@@ -1,5 +1,6 @@
 library dart_cose;
 
+import 'dart:io' as io;
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
@@ -7,6 +8,10 @@ import 'package:cbor/cbor.dart';
 import 'package:crypto/crypto.dart';
 import 'package:crypto_keys/crypto_keys.dart';
 import 'package:x509/x509.dart';
+import 'package:pointycastle/pointycastle.dart' as pc;
+import 'package:ninja/ninja.dart' as ninja;
+import 'package:ninja/padder/mgf/mgf.dart';
+import 'package:ninja/asymmetric/rsa/encoder/emsaPkcs1v15.dart';
 
 const begin_cert = '-----BEGIN CERTIFICATE-----';
 const end_cert = '-----END CERTIFICATE-----';
@@ -126,7 +131,11 @@ class Cose {
 
     final kidKey = HeaderParameters['kid'];
     // fall back to unprotected header if protected is not provided.
-    final kid = header[kidKey] ?? unprotectedHeader[kidKey];
+    var kidBuffer = header[kidKey] ?? unprotectedHeader[kidKey];
+    var kid = Uint8List.view(kidBuffer.buffer, 0, kidBuffer.length);
+    if (kid.length > 8) {
+      kid = kid.sublist(0, 8);
+    }
     final bkid = base64.encode(kid);
 
     final algKey = HeaderParameters['alg'];
@@ -164,24 +173,35 @@ class Cose {
           errorCode: CoseErrorCode.key_not_found);
     }
 
-    String cert = certs[bkid]!;
-    cert = cert.trim();
+    String derB64 = certs[bkid]!;
+    String cert = derB64.trim();
 
     // add pem header and footer if missing.
 
     if (!(cert.startsWith(begin_cert) && cert.endsWith(end_cert))) {
       cert = begin_cert + '\n' + cert + '\n' + end_cert;
+    } else {
+      derB64 = cert.replaceFirst(begin_cert, "");
+      derB64 = derB64.replaceFirst(end_cert, "");
+      derB64 = derB64.replaceAll("\n", "");
+      derB64 = derB64.replaceAll(" ", "");
     }
 
     // we expect there to be only 1 cert in the pem, so we take the first.
     var x509cert = parsePem(cert).first as X509Certificate;
 
-    // var cKid = calcKid(x509cert);
-    // // check if kid matches
-    // if (cKid != bkid) {
-    //   return CoseResult(
-    //       payload: {}, verified: false, errorCode: CoseErrorCode.kid_mismatch);
-    // }
+    var der = base64Decode(derB64);
+    var certKid = base64Encode(sha256.convert(der).bytes.sublist(0, 8));
+
+    ignore for now.
+    if (certKid != bkid) {
+      return CoseResult(
+          payload: payload,
+          verified: false,
+          errorCode: CoseErrorCode.kid_mismatch);
+    }
+
+    //The kid is defined as the first 8 bytes of the SHA256 hash of the certificate.
 
     var sigStructure = Cbor();
     final sigStructureEncoder = sigStructure.encoder;
@@ -200,7 +220,8 @@ class Cose {
     var publicKey = x509cert.publicKey;
 
     // -7: {'sign': 'ES256', 'digest': 'SHA-256'},
-    Verifier verifier;
+    Verifier? verifier;
+    bool verified = false;
     if (publicKey is EcPublicKey) {
       // primary algorithm
       /// ECDSA using P-256 and SHA-256
@@ -221,10 +242,48 @@ class Cose {
       /// RSASSA-PKCS1-v1_5 using SHA-256
       if (-7 == a) {
         verifier = publicKey.createVerifier(algorithms.signing.rsa.sha256);
+        ninja.RsaVerifier ninv =
+            ninja.RsassaPkcs1v15Verifier(hasher: EmsaHasher.sha256);
+        var npk = ninja.RSAPublicKey(publicKey.modulus, publicKey.exponent);
+        var verified = ninv.verify(
+            npk,
+            Uint8List.view(signers.buffer, 0, signers.length),
+            sigStructureBytes.buffer.asUint8List());
+        print(verified);
       } else if (-35 == a) {
         verifier = publicKey.createVerifier(algorithms.signing.rsa.sha384);
+        ninja.RsaVerifier ninv =
+            ninja.RsassaPkcs1v15Verifier(hasher: EmsaHasher.sha384);
+        var npk = ninja.RSAPublicKey(publicKey.modulus, publicKey.exponent);
+        var verified = ninv.verify(
+            npk,
+            Uint8List.view(signers.buffer, 0, signers.length),
+            sigStructureBytes.buffer.asUint8List());
+        print(verified);
       } else if (-36 == a) {
         verifier = publicKey.createVerifier(algorithms.signing.rsa.sha512);
+
+        ninja.RsaVerifier ninv =
+            ninja.RsassaPkcs1v15Verifier(hasher: EmsaHasher.sha512);
+        var npk = ninja.RSAPublicKey(publicKey.modulus, publicKey.exponent);
+        var verified = ninv.verify(
+            npk,
+            Uint8List.view(signers.buffer, 0, signers.length),
+            sigStructureBytes.buffer.asUint8List());
+        print(verified);
+      } else if (-37 == a) {
+        verifier = publicKey.createVerifier(algorithms.signing.rsa.sha256);
+
+        ninja.RsaSsaPssVerifier ninv = ninja.RsaSsaPssVerifier(
+            hasher: sha256, mgf: Mgf1(hasher: sha256), saltLength: 32);
+
+        var npk = ninja.RSAPublicKey(publicKey.modulus, publicKey.exponent);
+        verified = ninv.verify(
+            npk,
+            Uint8List.view(signers.buffer, 0, signers.length),
+            sigStructureBytes.buffer.asUint8List());
+
+        print(verified);
       } else {
         return CoseResult(
             payload: payload,
@@ -238,8 +297,10 @@ class Cose {
           errorCode: CoseErrorCode.unsupported_algorithm);
     }
 
-    var verified = verifier.verify(sigStructureBytes.buffer.asUint8List(),
-        Signature(Uint8List.view(signers.buffer, 0, signers.length)));
+    if (!verified && verifier != null) {
+      verified = verifier.verify(sigStructureBytes.buffer.asUint8List(),
+          Signature(Uint8List.view(signers.buffer, 0, signers.length)));
+    }
 
     return CoseResult(
         payload: payload, verified: verified, errorCode: CoseErrorCode.none);

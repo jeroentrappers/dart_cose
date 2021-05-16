@@ -50,13 +50,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.1"
-  characters:
-    dependency: transitive
-    description:
-      name: characters
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
   charcode:
     dependency: transitive
     description:
@@ -102,9 +95,9 @@ packages:
   crypto_keys:
     dependency: "direct main"
     description:
-      name: crypto_keys
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../crypto_keys"
+      relative: true
+    source: path
     version: "0.3.0"
   dart_base45:
     dependency: "direct main"
@@ -120,11 +113,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.0"
-  flutter:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -195,6 +183,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  ninja:
+    dependency: "direct main"
+    description:
+      name: ninja
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.2"
+  ninja_asn1:
+    dependency: transitive
+    description:
+      name: ninja_asn1
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  ninja_hex:
+    dependency: transitive
+    description:
+      name: ninja_hex
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  ninja_pem:
+    dependency: transitive
+    description:
+      name: ninja_pem
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  ninja_prime:
+    dependency: transitive
+    description:
+      name: ninja_prime
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   node_preamble:
     dependency: transitive
     description:
@@ -279,11 +302,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
-  sky_engine:
-    dependency: transitive
-    description: flutter
-    source: sdk
-    version: "0.0.99"
   source_map_stack_trace:
     dependency: transitive
     description:
@@ -361,13 +379,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
-  vector_math:
-    dependency: transitive
-    description:
-      name: vector_math
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
   vm_service:
     dependency: transitive
     description:
@@ -412,4 +423,3 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=1.17.0"

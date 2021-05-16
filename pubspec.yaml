@@ -17,5 +17,7 @@ dependencies:
   x509: #^0.2.2
     path: ../x509
 
+  ninja:  3.0.2
+
 dev_dependencies:
    test: ^1.17.3
