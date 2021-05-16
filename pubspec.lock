@@ -35,7 +35,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.5.0"
+    version: "2.6.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -95,16 +95,16 @@ packages:
   crypto_keys:
     dependency: "direct main"
     description:
-      name: crypto_keys
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../crypto_keys"
+      relative: true
+    source: path
     version: "0.3.0"
   dart_base45:
     dependency: "direct main"
     description:
-      name: dart_base45
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../dart_base45"
+      relative: true
+    source: path
     version: "1.0.0"
   file:
     dependency: transitive
@@ -183,6 +183,41 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  ninja:
+    dependency: "direct main"
+    description:
+      name: ninja
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.2"
+  ninja_asn1:
+    dependency: transitive
+    description:
+      name: ninja_asn1
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  ninja_hex:
+    dependency: transitive
+    description:
+      name: ninja_hex
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  ninja_pem:
+    dependency: transitive
+    description:
+      name: ninja_pem
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  ninja_prime:
+    dependency: transitive
+    description:
+      name: ninja_prime
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   node_preamble:
     dependency: transitive
     description:
@@ -245,7 +280,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.2"
+    version: "1.1.4"
   shelf_packages_handler:
     dependency: transitive
     description:
@@ -287,7 +322,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.0"
+    version: "1.8.1"
   stack_trace:
     dependency: transitive
     description:
@@ -322,7 +357,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.17.3"
+    version: "1.17.4"
   test_api:
     dependency: transitive
     description:
@@ -336,7 +371,7 @@ packages:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.23"
+    version: "0.3.24"
   typed_data:
     dependency: transitive
     description:
@@ -375,9 +410,9 @@ packages:
   x509:
     dependency: "direct main"
     description:
-      name: x509
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../x509"
+      relative: true
+    source: path
     version: "0.2.2"
   yaml:
     dependency: transitive
