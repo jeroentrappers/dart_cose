@@ -1,4 +1,8 @@
 
+## [1.0.5] = Analyis issues
+
+* Fix static analysis issues
+
 ## [1.0.5] = Project cleanup
 
 * Remove unused imports, clean up formatting, add example, readme and docs
