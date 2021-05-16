@@ -190,10 +190,10 @@ class Cose {
     // we expect there to be only 1 cert in the pem, so we take the first.
     var x509cert = parsePem(cert).first as X509Certificate;
 
+    //The kid is defined as the first 8 bytes of the SHA256 hash of the certificate.
     var der = base64Decode(derB64);
     var certKid = base64Encode(sha256.convert(der).bytes.sublist(0, 8));
 
-    ignore for now.
     if (certKid != bkid) {
       return CoseResult(
           payload: payload,
@@ -201,7 +201,6 @@ class Cose {
           errorCode: CoseErrorCode.kid_mismatch);
     }
 
-    //The kid is defined as the first 8 bytes of the SHA256 hash of the certificate.
 
     var sigStructure = Cbor();
     final sigStructureEncoder = sigStructure.encoder;

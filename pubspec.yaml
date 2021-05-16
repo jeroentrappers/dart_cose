@@ -1,21 +1,20 @@
 name: dart_cose
 description: Partial Dart implementation of COSE, RFC8152
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/jeroentrappers/dart_cose
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  dart_base45: #^1.0.0
-    path: ../dart_base45
+  dart_base45: ^1.0.1
   cbor: ^4.0.1
-  crypto_keys: # ^0.3.0
-    path: ../crypto_keys
+  crypto_keys: ^0.3.0
   crypto: ^3.0.1
-  
   x509: #^0.2.2
-    path: ../x509
+    git:
+      url: git://github.com/jeroentrappers/x509.git
+      ref: ehn_fixes
 
   ninja:  3.0.2
 

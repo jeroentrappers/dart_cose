@@ -95,17 +95,17 @@ packages:
   crypto_keys:
     dependency: "direct main"
     description:
-      path: "../crypto_keys"
-      relative: true
-    source: path
+      name: crypto_keys
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.3.0"
   dart_base45:
     dependency: "direct main"
     description:
-      path: "../dart_base45"
-      relative: true
-    source: path
-    version: "1.0.0"
+      name: dart_base45
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   file:
     dependency: transitive
     description:
@@ -410,9 +410,11 @@ packages:
   x509:
     dependency: "direct main"
     description:
-      path: "../x509"
-      relative: true
-    source: path
+      path: "."
+      ref: ehn_fixes
+      resolved-ref: "5bc56f3ca4b0c327f2906185c02fe6f8e0815a4e"
+      url: "git://github.com/jeroentrappers/x509.git"
+    source: git
     version: "0.2.2"
   yaml:
     dependency: transitive

@@ -9,3 +9,7 @@
 ## [1.0.2] - Return payload
 
 * Return payload
+
+## [1.0.3] = Finetuning KID validation, also support algo -37
+
+* Further implementation of missing features for DGC validation
