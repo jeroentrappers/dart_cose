@@ -1,3 +1,6 @@
+## [1.1.0]
+### Added
+- #5: Split up the folder structure
 
 ## [1.0.6] = Analyis issues
 
