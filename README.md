@@ -1,5 +1,5 @@
 [![Pub](https://img.shields.io/pub/v/dart_cose.svg)](https://pub.dartlang.org/packages/dart_cose)
-[![Build status](https://travis-ci.com/jeroentrappers/dart_cose.svg?branch=main)](https://travic-ci.com/github/jeroentrappers/dart_cose)
+[![Build status](https://travis-ci.com/jeroentrappers/dart_cose.svg?branch=main)](https://travis-ci.com/github/jeroentrappers/dart_cose)
 
 # dart_cose
 
