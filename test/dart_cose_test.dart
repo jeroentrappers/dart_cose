@@ -32,6 +32,7 @@ void main() {
         });
     print("took: " + stopwatch.elapsedMilliseconds.toString());
     print(result.errorCode);
-    expect(true, result.verified);
+    expect(result.verified, true);
+    expect(result.errorCode, CoseErrorCode.none);
   });
 }
