@@ -413,7 +413,7 @@ packages:
       name: x509b
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.3"
+    version: "0.2.4"
   yaml:
     dependency: transitive
     description:
