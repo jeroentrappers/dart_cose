@@ -9,16 +9,16 @@ const _end_cert = '-----END CERTIFICATE-----';
 
 class CertificateUtil {
   CertificateUtil._();
-  
+
   static X509Certificate getX509Certificate(String pem) {
     var cert = pem.trim();
 
-    if(cert.startsWith(_begin_cert)){
+    if (cert.startsWith(_begin_cert)) {
       // we expect there to be only 1 cert in the pem, so we take the first.
       return parsePem(pem).first as X509Certificate;
-    }
-    else{
-      return X509Certificate.fromAsn1(ASN1Sequence.fromBytes(base64Decode(pem)));
+    } else {
+      return X509Certificate.fromAsn1(
+          ASN1Sequence.fromBytes(base64Decode(pem)));
     }
   }
 

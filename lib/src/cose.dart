@@ -28,11 +28,19 @@ class Cose {
     List<dynamic>? data = inst.getDecodedData();
 
     if (null == data) {
-      return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.cbor_decoding_error, certificate: null);
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.cbor_decoding_error,
+          certificate: null);
     }
 
     if (data.isEmpty) {
-      return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.cbor_decoding_error, certificate: null);
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.cbor_decoding_error,
+          certificate: null);
     }
 
     // take the first element
@@ -40,13 +48,21 @@ class Cose {
 
     // check if it is of type List
     if (!(element is List)) {
-      return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.unsupported_format, certificate: null);
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.unsupported_format,
+          certificate: null);
     }
 
     List items = element;
     // check if it has exactly 4 items
     if (items.length != _CBOR_DATA_LENGTH) {
-      return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.invalid_format, certificate: null);
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.invalid_format,
+          certificate: null);
     }
 
     // extract the useful information.
@@ -62,11 +78,19 @@ class Cose {
     var header = <dynamic, dynamic>{};
     if (headerList != null) {
       if (!(headerList is List)) {
-        return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.unsupported_header_format, certificate: null);
+        return CoseResult(
+            payload: {},
+            verified: false,
+            errorCode: CoseErrorCode.unsupported_header_format,
+            certificate: null);
       }
 
       if (headerList.isEmpty) {
-        return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.cbor_decoding_error, certificate: null);
+        return CoseResult(
+            payload: {},
+            verified: false,
+            errorCode: CoseErrorCode.cbor_decoding_error,
+            certificate: null);
       }
       header = headerList.first;
     }
@@ -86,22 +110,38 @@ class Cose {
     try {
       var data = payloadCbor.getDecodedData();
       if (null == data) {
-        return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.payload_format_error, certificate: null);
+        return CoseResult(
+            payload: {},
+            verified: false,
+            errorCode: CoseErrorCode.payload_format_error,
+            certificate: null);
       }
       payload = data.first;
     } on Exception catch (e) {
       CoseLogger.printError(e);
-      return CoseResult(payload: {}, verified: false, errorCode: CoseErrorCode.payload_format_error, certificate: null);
+      return CoseResult(
+          payload: {},
+          verified: false,
+          errorCode: CoseErrorCode.payload_format_error,
+          certificate: null);
     }
     if (!certs.containsKey(bKid)) {
-      return CoseResult(payload: payload, verified: false, errorCode: CoseErrorCode.key_not_found, certificate: null);
+      return CoseResult(
+          payload: payload,
+          verified: false,
+          errorCode: CoseErrorCode.key_not_found,
+          certificate: null);
     }
 
     final pem = certs[bKid]!;
     final x509cert = CertificateUtil.getX509Certificate(pem);
     final certKid = extractKid(pem);
     if (certKid != bKid) {
-      return CoseResult(payload: payload, verified: false, errorCode: CoseErrorCode.kid_mismatch, certificate: null);
+      return CoseResult(
+          payload: payload,
+          verified: false,
+          errorCode: CoseErrorCode.kid_mismatch,
+          certificate: null);
     }
 
     final sigStructure = Cbor();
@@ -109,7 +149,8 @@ class Cose {
 
     sigStructureEncoder.writeArray([
       'Signature1', // context string
-      Uint8List.view(protectedHeader.buffer, 0, protectedHeader.length), // protected body (header)
+      Uint8List.view(protectedHeader.buffer, 0,
+          protectedHeader.length), // protected body (header)
       Uint8List(0),
       Uint8List.view(payloadBytes.buffer, 0, payloadBytes.length)
     ]);
@@ -132,7 +173,11 @@ class Cose {
       } else if (-36 == a) {
         verifier = publicKey.createVerifier(algorithms.signing.ecdsa.sha512);
       } else {
-        return CoseResult(payload: payload, verified: false, errorCode: CoseErrorCode.unsupported_algorithm, certificate: x509cert);
+        return CoseResult(
+            payload: payload,
+            verified: false,
+            errorCode: CoseErrorCode.unsupported_algorithm,
+            certificate: x509cert);
       }
     } else if (publicKey is RsaPublicKey) {
       // secondary algorithm
@@ -157,23 +202,40 @@ class Cose {
         //var verified = ninv.verify(npk, Uint8List.view(signers.buffer, 0, signers.length), sigStructureBytes.buffer.asUint8List());
         //CoseLogger.print(verified);
       } else if (-37 == a) {
-        ninja.RsaSsaPssVerifier ninv = ninja.RsaSsaPssVerifier(hasher: sha256, mgf: Mgf1(hasher: sha256), saltLength: 32);
+        ninja.RsaSsaPssVerifier ninv = ninja.RsaSsaPssVerifier(
+            hasher: sha256, mgf: Mgf1(hasher: sha256), saltLength: 32);
 
         var npk = ninja.RSAPublicKey(publicKey.modulus, publicKey.exponent);
-        verified = ninv.verify(npk, Uint8List.view(signers.buffer, 0, signers.length), sigStructureBytes.buffer.asUint8List());
+        verified = ninv.verify(
+            npk,
+            Uint8List.view(signers.buffer, 0, signers.length),
+            sigStructureBytes.buffer.asUint8List());
         CoseLogger.print(verified);
       } else {
-        return CoseResult(payload: payload, verified: false, errorCode: CoseErrorCode.unsupported_algorithm, certificate: x509cert);
+        return CoseResult(
+            payload: payload,
+            verified: false,
+            errorCode: CoseErrorCode.unsupported_algorithm,
+            certificate: x509cert);
       }
     } else {
-      return CoseResult(payload: payload, verified: false, errorCode: CoseErrorCode.unsupported_algorithm, certificate: x509cert);
+      return CoseResult(
+          payload: payload,
+          verified: false,
+          errorCode: CoseErrorCode.unsupported_algorithm,
+          certificate: x509cert);
     }
 
     if (!verified && verifier != null) {
-      verified = verifier.verify(sigStructureBytes.buffer.asUint8List(), Signature(Uint8List.view(signers.buffer, 0, signers.length)));
+      verified = verifier.verify(sigStructureBytes.buffer.asUint8List(),
+          Signature(Uint8List.view(signers.buffer, 0, signers.length)));
     }
 
-    return CoseResult(payload: payload, verified: verified, errorCode: CoseErrorCode.none, certificate: x509cert);
+    return CoseResult(
+        payload: payload,
+        verified: verified,
+        errorCode: CoseErrorCode.none,
+        certificate: x509cert);
   }
 
   static String extractKid(String pem) => CertificateUtil.extractKid(pem);

@@ -7,10 +7,9 @@ class CoseResult {
   final CoseErrorCode errorCode;
   final X509Certificate? certificate;
 
-  CoseResult({
-    required this.payload,
-    required this.verified,
-    required this.errorCode,
-    required this.certificate
-  });
+  CoseResult(
+      {required this.payload,
+      required this.verified,
+      required this.errorCode,
+      required this.certificate});
 }
