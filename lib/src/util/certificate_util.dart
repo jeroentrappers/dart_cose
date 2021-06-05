@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asn1lib/asn1lib.dart';
 import 'package:crypto/crypto.dart';
 import 'package:x509b/x509.dart';
 
@@ -8,17 +9,17 @@ const _end_cert = '-----END CERTIFICATE-----';
 
 class CertificateUtil {
   CertificateUtil._();
-
+  
   static X509Certificate getX509Certificate(String pem) {
     var cert = pem.trim();
 
-    // add pem header and footer if missing.
-    if (!cert.startsWith(_begin_cert) || !cert.endsWith(_end_cert)) {
-      cert = _begin_cert + '\n' + cert + '\n' + _end_cert;
+    if(cert.startsWith(_begin_cert)){
+      // we expect there to be only 1 cert in the pem, so we take the first.
+      return parsePem(pem).first as X509Certificate;
     }
-
-    // we expect there to be only 1 cert in the pem, so we take the first.
-    return parsePem(cert).first as X509Certificate;
+    else{
+      return X509Certificate.fromAsn1(ASN1Sequence.fromBytes(base64Decode(pem)));
+    }
   }
 
   static String extractKid(String pem) {
