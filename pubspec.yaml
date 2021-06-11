@@ -11,8 +11,14 @@ dependencies:
   cbor: ^4.0.1
   crypto_keys: ^0.3.0
   crypto: ^3.0.1
-  asn1lib: ^1.0.0
-  x509b:  ^0.2.5
+  asn1lib:
+    git:
+      url: https://github.com/jeroentrappers/asn1lib
+      ref: 1.0.4
+  x509b:
+    git:
+      url: https://github.com/jeroentrappers/x509
+      ref: 0.2.6
   ninja: ^3.0.2
 
 dev_dependencies:

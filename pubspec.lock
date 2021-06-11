@@ -25,10 +25,12 @@ packages:
   asn1lib:
     dependency: "direct main"
     description:
-      name: asn1lib
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
+      path: "."
+      ref: "1.0.4"
+      resolved-ref: "9ab1b420a8b6963e7f75c0440337f2647715203c"
+      url: "https://github.com/jeroentrappers/asn1lib"
+    source: git
+    version: "1.0.4"
   async:
     dependency: transitive
     description:
@@ -410,10 +412,12 @@ packages:
   x509b:
     dependency: "direct main"
     description:
-      name: x509b
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.5"
+      path: "."
+      ref: "0.2.6"
+      resolved-ref: "9ac20aea2eba7109941102da2e107123e2a4adf3"
+      url: "https://github.com/jeroentrappers/x509"
+    source: git
+    version: "0.2.6"
   yaml:
     dependency: transitive
     description:
