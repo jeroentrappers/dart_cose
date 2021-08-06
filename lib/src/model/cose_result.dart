@@ -6,10 +6,12 @@ class CoseResult {
   final bool verified;
   final CoseErrorCode errorCode;
   final X509Certificate? certificate;
+  final PublicKey? publicKey;
 
   CoseResult(
       {required this.payload,
       required this.verified,
       required this.errorCode,
-      required this.certificate});
+      required this.certificate,
+      required this.publicKey});
 }

@@ -1,7 +1,9 @@
 // Copyright (c) 2021, Jeroen trappers. All rights reserved. Use of this source
 // code is governed by the license that can be found in the LICENSE file
 
+import 'dart:convert';
 import 'dart:typed_data';
+import 'package:asn1lib/asn1lib.dart';
 import 'package:cbor/cbor.dart';
 import 'package:crypto/crypto.dart';
 import 'package:crypto_keys/crypto_keys.dart';
@@ -32,7 +34,8 @@ class Cose {
           payload: {},
           verified: false,
           errorCode: CoseErrorCode.cbor_decoding_error,
-          certificate: null);
+          certificate: null,
+          publicKey: null);
     }
 
     if (data.isEmpty) {
@@ -40,7 +43,8 @@ class Cose {
           payload: {},
           verified: false,
           errorCode: CoseErrorCode.cbor_decoding_error,
-          certificate: null);
+          certificate: null,
+          publicKey: null);
     }
 
     // take the first element
@@ -52,7 +56,8 @@ class Cose {
           payload: {},
           verified: false,
           errorCode: CoseErrorCode.unsupported_format,
-          certificate: null);
+          certificate: null,
+          publicKey: null);
     }
 
     List items = element;
@@ -62,7 +67,8 @@ class Cose {
           payload: {},
           verified: false,
           errorCode: CoseErrorCode.invalid_format,
-          certificate: null);
+          certificate: null,
+          publicKey: null);
     }
 
     // extract the useful information.
@@ -82,7 +88,8 @@ class Cose {
             payload: {},
             verified: false,
             errorCode: CoseErrorCode.unsupported_header_format,
-            certificate: null);
+            certificate: null,
+            publicKey: null);
       }
 
       if (headerList.isEmpty) {
@@ -90,7 +97,8 @@ class Cose {
             payload: {},
             verified: false,
             errorCode: CoseErrorCode.cbor_decoding_error,
-            certificate: null);
+            certificate: null,
+            publicKey: null);
       }
       header = headerList.first;
     }
@@ -114,7 +122,8 @@ class Cose {
             payload: {},
             verified: false,
             errorCode: CoseErrorCode.payload_format_error,
-            certificate: null);
+            certificate: null,
+            publicKey: null);
       }
       payload = data.first;
     } on Exception catch (e) {
@@ -123,25 +132,42 @@ class Cose {
           payload: {},
           verified: false,
           errorCode: CoseErrorCode.payload_format_error,
-          certificate: null);
+          certificate: null,
+          publicKey: null);
     }
     if (!certs.containsKey(bKid)) {
       return CoseResult(
           payload: payload,
           verified: false,
           errorCode: CoseErrorCode.key_not_found,
-          certificate: null);
+          certificate: null,
+          publicKey: null);
     }
 
-    final pem = certs[bKid]!;
-    final x509cert = CertificateUtil.getX509Certificate(pem);
-    final certKid = extractKid(pem);
-    if (certKid != bKid) {
-      return CoseResult(
-          payload: payload,
-          verified: false,
-          errorCode: CoseErrorCode.kid_mismatch,
-          certificate: null);
+    // Get the public key to verify the signature.
+    // This can be either a x509 certificate (EU) or only the public key structure (UK)
+    // First we try to parse a x509, when that fails we try to treat is as a public key sturcture
+    PublicKey publicKey;
+    X509Certificate? x509cert;
+    try {
+      final pem = certs[bKid]!;
+      x509cert = CertificateUtil.getX509Certificate(pem);
+      final certKid = extractKid(pem);
+      if (certKid != bKid) {
+        return CoseResult(
+            payload: payload,
+            verified: false,
+            errorCode: CoseErrorCode.kid_mismatch,
+            certificate: null,
+            publicKey: null);
+      }
+      publicKey = x509cert.publicKey;
+    } on Error {
+      final key = certs[bKid]!;
+      SubjectPublicKeyInfo publicKeyInfo = SubjectPublicKeyInfo.fromAsn1(
+          ASN1Sequence.fromBytes(base64Decode(key)));
+      x509cert = null;
+      publicKey = publicKeyInfo.subjectPublicKey;
     }
 
     final sigStructure = Cbor();
@@ -157,8 +183,6 @@ class Cose {
 
     sigStructure.decodeFromInput();
     final sigStructureBytes = sigStructure.output.getData();
-
-    final publicKey = x509cert.publicKey;
 
     // -7: {'sign': 'ES256', 'digest': 'SHA-256'},
     Verifier? verifier;
@@ -177,7 +201,8 @@ class Cose {
             payload: payload,
             verified: false,
             errorCode: CoseErrorCode.unsupported_algorithm,
-            certificate: x509cert);
+            certificate: x509cert,
+            publicKey: publicKey);
       }
     } else if (publicKey is RsaPublicKey) {
       // secondary algorithm
@@ -216,14 +241,16 @@ class Cose {
             payload: payload,
             verified: false,
             errorCode: CoseErrorCode.unsupported_algorithm,
-            certificate: x509cert);
+            certificate: x509cert,
+            publicKey: publicKey);
       }
     } else {
       return CoseResult(
           payload: payload,
           verified: false,
           errorCode: CoseErrorCode.unsupported_algorithm,
-          certificate: x509cert);
+          certificate: x509cert,
+          publicKey: publicKey);
     }
 
     if (!verified && verifier != null) {
@@ -235,7 +262,8 @@ class Cose {
         payload: payload,
         verified: verified,
         errorCode: CoseErrorCode.none,
-        certificate: x509cert);
+        certificate: x509cert,
+        publicKey: publicKey);
   }
 
   static String extractKid(String pem) => CertificateUtil.extractKid(pem);
