@@ -23,9 +23,10 @@ class HeaderUtil {
     // fall back to unprotected header if protected is not provided.
     final kidBuffer = header[kidKey] ?? unprotectedHeader[kidKey];
     var kid = Uint8List.view(kidBuffer.buffer, 0, kidBuffer.length);
-    if (kid.length > 8) {
-      kid = kid.sublist(0, 8);
-    }
+    // Allow more than 8 bytes for UK. Take the entire value and evaluate.
+    //if (kid.length > 8) {
+    //  kid = kid.sublist(0, 8);
+    //}
     return base64.encode(kid);
   }
 
