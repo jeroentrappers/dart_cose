@@ -29,22 +29,9 @@ class Cose {
     inst.decodeFromList(cose);
     List<dynamic>? data = inst.getDecodedData();
 
-    if (null == data) {
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.cbor_decoding_error,
-          certificate: null,
-          publicKey: null);
-    }
-
-    if (data.isEmpty) {
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.cbor_decoding_error,
-          certificate: null,
-          publicKey: null);
+    //check if the data is not there
+    if ((null == data) || (data.isEmpty)) {
+      return CoseResult.withErrorCode(CoseErrorCode.cbor_decoding_error);
     }
 
     // take the first element
@@ -52,23 +39,13 @@ class Cose {
 
     // check if it is of type List
     if (!(element is List)) {
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.unsupported_format,
-          certificate: null,
-          publicKey: null);
+      return CoseResult.withErrorCode(CoseErrorCode.unsupported_format);
     }
 
     List items = element;
     // check if it has exactly 4 items
     if (items.length != _CBOR_DATA_LENGTH) {
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.invalid_format,
-          certificate: null,
-          publicKey: null);
+      return CoseResult.withErrorCode(CoseErrorCode.invalid_format);
     }
 
     // extract the useful information.
@@ -84,21 +61,11 @@ class Cose {
     var header = <dynamic, dynamic>{};
     if (headerList != null) {
       if (!(headerList is List)) {
-        return CoseResult(
-            payload: {},
-            verified: false,
-            errorCode: CoseErrorCode.unsupported_header_format,
-            certificate: null,
-            publicKey: null);
+        return CoseResult.withErrorCode(CoseErrorCode.unsupported_header_format);
       }
 
       if (headerList.isEmpty) {
-        return CoseResult(
-            payload: {},
-            verified: false,
-            errorCode: CoseErrorCode.cbor_decoding_error,
-            certificate: null,
-            publicKey: null);
+        return CoseResult.withErrorCode(CoseErrorCode.cbor_decoding_error);
       }
       header = headerList.first;
     }
@@ -118,35 +85,20 @@ class Cose {
     try {
       var data = payloadCbor.getDecodedData();
       if (null == data) {
-        return CoseResult(
-            payload: {},
-            verified: false,
-            errorCode: CoseErrorCode.payload_format_error,
-            certificate: null,
-            publicKey: null);
+        return CoseResult.withErrorCodeAndKid(CoseErrorCode.payload_format_error, bKid);
       }
       payload = data.first;
     } on Exception catch (e) {
       CoseLogger.printError(e);
-      return CoseResult(
-          payload: {},
-          verified: false,
-          errorCode: CoseErrorCode.payload_format_error,
-          certificate: null,
-          publicKey: null);
+      return CoseResult.withErrorCodeAndKid(CoseErrorCode.payload_format_error, bKid);
     }
     if (!certs.containsKey(bKid)) {
-      return CoseResult(
-          payload: payload,
-          verified: false,
-          errorCode: CoseErrorCode.key_not_found,
-          certificate: null,
-          publicKey: null);
+      return CoseResult.withErrorCodeAndKid(CoseErrorCode.key_not_found, bKid);
     }
 
     // Get the public key to verify the signature.
     // This can be either a x509 certificate (EU) or only the public key structure (UK)
-    // First we try to parse a x509, when that fails we try to treat is as a public key sturcture
+    // First we try to parse a x509, when that fails we try to treat is as a public key structure
     PublicKey publicKey;
     X509Certificate? x509cert;
     try {
@@ -158,9 +110,11 @@ class Cose {
             payload: payload,
             verified: false,
             errorCode: CoseErrorCode.kid_mismatch,
-            certificate: null,
+            coseKid: bKid,
+            certificate: x509cert,
             publicKey: null);
       }
+
       publicKey = x509cert.publicKey;
     } on Error {
       final key = certs[bKid]!;
@@ -201,6 +155,7 @@ class Cose {
             payload: payload,
             verified: false,
             errorCode: CoseErrorCode.unsupported_algorithm,
+            coseKid: bKid,
             certificate: x509cert,
             publicKey: publicKey);
       }
@@ -241,6 +196,7 @@ class Cose {
             payload: payload,
             verified: false,
             errorCode: CoseErrorCode.unsupported_algorithm,
+            coseKid: bKid,
             certificate: x509cert,
             publicKey: publicKey);
       }
@@ -249,6 +205,7 @@ class Cose {
           payload: payload,
           verified: false,
           errorCode: CoseErrorCode.unsupported_algorithm,
+          coseKid: bKid,
           certificate: x509cert,
           publicKey: publicKey);
     }
@@ -262,6 +219,7 @@ class Cose {
         payload: payload,
         verified: verified,
         errorCode: CoseErrorCode.none,
+        coseKid: bKid,
         certificate: x509cert,
         publicKey: publicKey);
   }
