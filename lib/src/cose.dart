@@ -93,7 +93,13 @@ class Cose {
       return CoseResult.withErrorCodeAndKid(CoseErrorCode.payload_format_error, bKid);
     }
     if (!certs.containsKey(bKid)) {
-      return CoseResult.withErrorCodeAndKid(CoseErrorCode.key_not_found, bKid);
+      return CoseResult(
+          payload: payload,
+          verified: false,
+          errorCode: CoseErrorCode.key_not_found,
+          coseKid: bKid,
+          certificate: null,
+          publicKey: null);
     }
 
     // Get the public key to verify the signature.
