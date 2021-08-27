@@ -61,7 +61,8 @@ class Cose {
     var header = <dynamic, dynamic>{};
     if (headerList != null) {
       if (!(headerList is List)) {
-        return CoseResult.withErrorCode(CoseErrorCode.unsupported_header_format);
+        return CoseResult.withErrorCode(
+            CoseErrorCode.unsupported_header_format);
       }
 
       if (headerList.isEmpty) {
@@ -85,12 +86,14 @@ class Cose {
     try {
       var data = payloadCbor.getDecodedData();
       if (null == data) {
-        return CoseResult.withErrorCodeAndKid(CoseErrorCode.payload_format_error, bKid);
+        return CoseResult.withErrorCodeAndKid(
+            CoseErrorCode.payload_format_error, bKid);
       }
       payload = data.first;
     } on Exception catch (e) {
       CoseLogger.printError(e);
-      return CoseResult.withErrorCodeAndKid(CoseErrorCode.payload_format_error, bKid);
+      return CoseResult.withErrorCodeAndKid(
+          CoseErrorCode.payload_format_error, bKid);
     }
     if (!certs.containsKey(bKid)) {
       return CoseResult(
