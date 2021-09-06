@@ -32,6 +32,22 @@ void main() {
         });
     print("took: " + stopwatch.elapsedMilliseconds.toString());
     print(result.errorCode);
-    expect(true, result.verified);
+    expect(result.verified, true);
+    expect(result.errorCode, CoseErrorCode.none);
+  });
+
+  test('validate example QR string for UK', () async {
+    var stopwatch = Stopwatch()..start();
+    var result = Cose.decodeAndVerify(
+        unChain(
+            r'HC1:6BFOXNYTSMAHN-HUVQG:M89AP77N$O6E8N+M3XHV5U6R5JEHHTBAVD A13/4X6BMF6.UCOMI6+QBR7BD7LG8CU6O8QGU68ORJSPZHQW1SZSP:*PG+QV*OEHP/ROMHPO/5  QGU65F4TKRN95U/38T9:H9P1J4HGZJK:HGX2MI C+G9BYI970SC9EY8R2KK3M8FFZ.C-3N$29ALG:.C+-CBJC5IAXMFU*GSHGRKMXGG%DBZI9$JAQJKN94J7J43M3Z8.-B97U: KUZNP3F.6O4DRI%K/YN3CR9*O3-S-YNNCLBLEH-BKMHFDJ:2CUDBQEAJJKKKMWC8WYOZM1NLKA8TK6IR$0/KQ4WDEK4*UO5U9/GJ07QJ1R1*595G QF$1WQ-K.XSDHF6$7DTMTL9YZ928NEOAS:9UAR64NL9K32N YAVGSHB06%C05D'),
+        {
+          r'S2V5MS1zaXQx':
+              r'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAECyzJjCOd6AZI85tOFAtvagr0MUcnM11ces2tHHsjg/TiEUX0M6tfNJloc27xeLbvrphVUDM5RoLtinu5bCQ1ug=='
+        });
+    print("took: " + stopwatch.elapsedMilliseconds.toString());
+    print(result.errorCode);
+    expect(result.verified, true);
+    expect(result.errorCode, CoseErrorCode.none);
   });
 }

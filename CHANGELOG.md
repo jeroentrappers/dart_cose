@@ -1,3 +1,16 @@
+## [1.1.3]
+- return certificate use to verify signature
+
+## [1.1.2]
+- update x509 again
+
+## [1.1.1]
+- update x509 
+
+## [1.1.0]
+### Added
+- #5: Split up the folder structure
+- #9: Extra method to extract the kid from a pem string
 
 ## [1.0.6] = Analyis issues
 

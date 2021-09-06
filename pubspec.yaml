@@ -1,17 +1,24 @@
 name: dart_cose
 description: Partial Dart implementation of COSE, RFC8152. It is used to validate European Digital Green Certificates.
-version: 1.0.6
+version: 1.1.9
 homepage: https://github.com/jeroentrappers/dart_cose
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.12.3 <3.0.0"
 
 dependencies:
   dart_base45: ^1.0.1
   cbor: ^4.0.1
   crypto_keys: ^0.3.0
   crypto: ^3.0.1
-  x509b: ^0.2.3
+  asn1lib:
+    git:
+      url: https://github.com/jeroentrappers/asn1lib
+      ref: 1.0.4
+  x509b:
+    git:
+      url: https://github.com/jeroentrappers/x509
+      ref: 0.2.8
   ninja: ^3.0.2
 
 dev_dependencies:

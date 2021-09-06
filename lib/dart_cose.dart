@@ -3,5 +3,8 @@
 
 library dart_cose;
 
-/// Use COSE to deode and verify COSE sturctures
+export 'src/model/cose_error_code.dart';
+export 'src/model/cose_result.dart';
+
+/// Use COSE to decode and verify COSE structures
 export 'src/cose.dart';
