@@ -1,3 +1,28 @@
+## [1.1.10]
+- return kid in CoseResult
+- Fixed CoseLogger
+
+## [1.1.9]
+- update depdencies
+
+## [1.1.8b]
+- formatting
+
+## [1.1.8]
+- Added uk signature validation
+
+## [1.1.7]
+- update depdencies
+
+## [1.1.6]
+- update depdencies
+
+## [1.1.5]
+- update depdencies
+
+## [1.1.4]
+- update depdencies
+
 ## [1.1.3]
 - return certificate use to verify signature
 
