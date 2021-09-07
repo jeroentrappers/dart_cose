@@ -50,4 +50,21 @@ void main() {
     expect(result.verified, true);
     expect(result.errorCode, CoseErrorCode.none);
   });
+
+
+  test('validate example QR string for Northern Ireland', () async {
+    var stopwatch = Stopwatch()..start();
+    var result = Cose.decodeAndVerify(
+        unChain(
+            r'HC1:NCFOXN%TSMAHN-H*ZS6/V7-VC9QWNCKW8VWBZEJE8UXG4-55WIU:X9UCA$Z5 NI4EFSYS:%OD3PYE9*FJRLDQC8$.AIGCY0K5$0O:AT+9Q:GM+81$4$/I**4V.GPLK$7UVGIA2LK8UM1M0OPD68IMI4UUIMI.J9WVHWVH+ZE6%PUU1VLICUH+ZB:H1IRHHKE2YU7T2 UQ7S7TK24H9HT2RT7/IE%TE6UG+ZE V1+GO9+PGF6Z6NC8P$WA3AAPEPBDSM+Q9I6O670C57Q4UYQD*O%+Q.SQBDOBKLP64-HQ/HQ3IRE+QJDO4A7R/7-9DXGGX2MCJJBIKSKE MCAOI8%MEWI4DR%CI4UES-JC0JOD0E$KZ33/HLIJLKNF8JF172926QDJ+:38EI0UFT*H:5B6UO9KQ00A$RVX.KG9HD3T-UM40W72R CVU3QDS6YEUHIF1YNDR8GO7.CD6SBIMEF.QHQGS9RH2G94GCBVS10:2NG0'),
+        {
+          r'1J9pb87ndV0=':
+          r'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEZ+fdcTa4UWA/6PT5V4a0+0j1/s++4JQEsW/HvGnxxP7mGfuQDfn/FRdUMGQtTkoCGaky1gpYVZXkkoYu9ZjlUw=='
+        });
+    print("took: " + stopwatch.elapsedMilliseconds.toString());
+    print(result.errorCode);
+    expect(result.verified, true);
+    expect(result.errorCode, CoseErrorCode.none);
+  });
+
 }
