@@ -7,7 +7,7 @@ class CoseLogger {
     _isEnabled = enabled;
   }
 
-  static void print(dynamic value) {
+  static void printDebug(dynamic value) {
     if (_isEnabled) print(value);
   }
 
