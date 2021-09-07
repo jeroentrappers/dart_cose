@@ -74,13 +74,13 @@ class Cose {
     final bKid = HeaderUtil.parseKid(header, unprotectedHeader);
     final a = HeaderUtil.parseAlg(header, unprotectedHeader);
 
-    CoseLogger.print("kid: $bKid");
-    CoseLogger.print("alg: $a");
+    CoseLogger.printDebug("kid: $bKid");
+    CoseLogger.printDebug("alg: $a");
 
     // parse the payload
     var payloadCbor = Cbor();
     payloadCbor.decodeFromBuffer(payloadBytes);
-    CoseLogger.print(payloadCbor.decodedPrettyPrint());
+    CoseLogger.printDebug(payloadCbor.decodedPrettyPrint());
 
     dynamic payload = {};
     try {
@@ -199,7 +199,7 @@ class Cose {
             npk,
             Uint8List.view(signers.buffer, 0, signers.length),
             sigStructureBytes.buffer.asUint8List());
-        CoseLogger.print(verified);
+        CoseLogger.printDebug(verified);
       } else {
         return CoseResult(
             payload: payload,
