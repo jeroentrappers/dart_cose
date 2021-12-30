@@ -33,7 +33,7 @@ class CertificateUtil {
     }
 
     //The kid is defined as the first 8 bytes of the SHA256 hash of the certificate.
-    final der = base64Decode(pem);
+    final der = base64Decode(cert);
     return base64Encode(sha256.convert(der).bytes.sublist(0, 8));
   }
 }
