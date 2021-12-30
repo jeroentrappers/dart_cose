@@ -68,5 +68,4 @@ void main() {
     expect(result.verified, true);
     expect(result.errorCode, CoseErrorCode.none);
   });
-
 }
