@@ -1,3 +1,6 @@
+## [1.1.11]
+- updated x509
+
 ## [1.1.10]
 - return kid in CoseResult
 - Fixed CoseLogger

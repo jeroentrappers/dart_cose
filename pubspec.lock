@@ -413,11 +413,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0.2.8"
-      resolved-ref: "087786c37fe1720cbc0dc5ad300f75f15f63f664"
+      ref: "0.2.9"
+      resolved-ref: "1e58d8c97d1eda594acbe3a40acf9221dc768d0c"
       url: "https://github.com/jeroentrappers/x509"
     source: git
-    version: "0.2.8"
+    version: "0.2.9"
   yaml:
     dependency: transitive
     description:
